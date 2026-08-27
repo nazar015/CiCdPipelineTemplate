@@ -1,0 +1,35 @@
+name: ci
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request: 
+    branches: [ "main" ]
+    
+env:
+  DOTNET_VERSION: "10.0.x"
+  
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: give runner repository files
+        uses: actions/checkout@v4
+      
+      - name: install .net sdk
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+            
+      - name: install dependencies
+        run: dotnet restore
+        
+      - name: build app
+        run: dotnet build --no-restore --configuration Release
+      
+      - name: run unit tests
+        run: dotnet test --no-build --configuration Release --filter Category=Unit --verbosity normal
+        
+      - name: run test containers
+        run: dotnet test --no-build --configuration Release --filter Category=Integration --verbosity normal
