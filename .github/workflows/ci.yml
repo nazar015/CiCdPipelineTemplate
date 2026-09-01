@@ -23,13 +23,13 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
             
       - name: install dependencies
-        run: dotnet restore
+        run: dotnet restore ./AppForDeploy1/AppForDeploy1/AppForDeploy1.csproj
         
       - name: build app
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build ./AppForDeploy1/AppForDeploy1/AppForDeploy1.csproj --no-restore --configuration Release
       
       - name: run unit tests
-        run: dotnet test --no-build --configuration Release --filter Category=Unit --verbosity normal
+        run: dotnet test ./AppForDeploy1/AppForDeploy1.Tests/AppForDeploy1.Tests.csproj --no-build --configuration Release --filter Category=Unit --verbosity normal
         
       - name: run test containers
-        run: dotnet test --no-build --configuration Release --filter Category=Integration --verbosity normal
+        run: dotnet test ./AppForDeploy1/AppForDeploy1.Tests/AppForDeploy1.Tests.csproj --no-build --configuration Release --filter Category=Integration --verbosity normal
