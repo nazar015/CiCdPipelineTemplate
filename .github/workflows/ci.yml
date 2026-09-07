@@ -33,3 +33,28 @@ jobs:
         
       - name: run test containers
         run: dotnet test ./AppForDeploy1/AppForDeploy1.Tests/AppForDeploy1.Tests.csproj --no-build --configuration Release --filter Category=Integration --verbosity normal
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: download code into runner
+        uses: actions/checkout@v4
+      
+      - name: log in to ACR
+        uses: docker/login-action@v3
+        with: 
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      
+      - name: build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./AppForDeploy1/AppForDeploy1
+          file: ./AppForDeploy1/AppForDeploy1/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.ACR_LOGIN_SERVER }}/appfordeploy1:${{ github.sha }}
+            ${{ secrets.ACR_LOGIN_SERVER }}/appfordeploy1:latest
